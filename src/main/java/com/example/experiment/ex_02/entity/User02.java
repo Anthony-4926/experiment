@@ -22,8 +22,8 @@ public class User02 {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    @OneToMany(mappedBy = "user")
-    private List<User01Address01> userAddresses;
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
+    private List<User02Address02> userAddresses;
 
     @Column(columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             insertable = false, updatable = false)

@@ -27,8 +27,8 @@ public class Address02 {
             updatable = false, insertable = false)
     private LocalDateTime insertTime;
 
-    @OneToMany(mappedBy = "address")
-    private List<User02Address02> user02Address02s;
+    @OneToMany(mappedBy = "address", cascade = CascadeType.REMOVE)
+    private List<User02Address02> userAddresses;
 
     public Address02(String detail) {
         this.detail = detail;

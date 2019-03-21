@@ -1,9 +1,10 @@
 package com.example.experiment.ex_02.repository;
 
-import com.example.experiment.User;
+
 import com.example.experiment.ex_02.entity.Address02;
 import com.example.experiment.ex_02.entity.User02;
 import com.example.experiment.ex_02.entity.User02Address02;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -16,6 +17,7 @@ import java.util.List;
  * @author 赵鑫
  * @create 2019-03-20 19:48
  */
+@Slf4j
 @Repository
 @Transactional
 public class ex_02_UserRepository {
@@ -29,7 +31,7 @@ public class ex_02_UserRepository {
      * @param user
      * @return
      */
-    public User addUser(User user) {
+    public User02 addUser(User02 user) {
         em.persist(user);
         em.refresh(user);
         return user;
@@ -43,9 +45,10 @@ public class ex_02_UserRepository {
      * @return
      */
     public Address02 addAddress(Address02 address, int uid) {
-        em.persist(address);
+       address = em.merge(address);
         User02 user = em.find(User02.class, uid);
         User02Address02 user02Address02 = new User02Address02(address, user);
+        em.persist(user02Address02);
         return address;
     }
 
@@ -75,15 +78,20 @@ public class ex_02_UserRepository {
     public Address02 updateAddress(int aid, int uid) {
         Address02 add = new Address02();
         add.setId(aid);
-        em.merge(add);
+        add = em.merge(add);
         em.refresh(add);
 
         User02 user = new User02();
         user.setId(uid);
-        em.merge(user);
+        user = em.merge(user);
         em.refresh(user);
-        User02Address02 user02Address02 = new User02Address02(add, user);
-        em.persist(user02Address02);
+
+        List<User02Address02> ud = user.getUserAddresses();
+        Address02 finalAdd = add;
+        ud.forEach(u->{
+            u.setAddress(finalAdd);
+        });
+
         return add;
     }
 
@@ -94,20 +102,18 @@ public class ex_02_UserRepository {
      * @return
      */
     public List<Address02> listAddresses(int uid) {
-        List<Address02> result=null;
+        List<Address02> result;
         String jpql = "SELECT ud.address FROM User02Address02 ud WHERE ud.user.id=?1";
         Query query = em.createQuery(jpql);
         result = query.setParameter(1, uid).getResultList();
-        /*User user= em.find(User.class, uid);
-        List<User02Address02> list = user.getUserAddresses();
-        List<Address02> result = new ArrayList<>();
-        list.forEach(l->{result.add(l.getAddress());});*/
         return result;
-
     }
 
     public void removeAddress(int aid) {
 
+        String jpql = "DELETE FROM Address02 a WHERE a.id=?1";
+        Query query = em.createQuery(jpql);
+        query.setParameter(1, aid).executeUpdate();
     }
 
     /**
@@ -116,32 +122,8 @@ public class ex_02_UserRepository {
      * @param uid
      */
     public void remaveUser(int uid) {
-
-    }
-
-
-
-    public void insertUserAddress() {
-        User02 user = new User02("BO");
-        em.persist(user);
-        user.setName("wangbo");
-        em.flush();
-        User02 user1 = new User02("zhaoxin");
-        em.persist(user1);
-
-        Address02 address = new Address02("956");
-        em.persist(address);
-
-        Address02 address1 = new Address02("923");
-        em.persist(address1);
-
-        User02Address02 userAddress = new User02Address02(address, user);
-        em.persist(userAddress);
-        User02Address02 userAddress2 = new User02Address02(address, user1);
-        em.persist(userAddress2);
-        User02Address02 userAddress1 = new User02Address02(address1, user);
-        em.persist(userAddress1);
-        User02Address02 userAddress3 = new User02Address02(address1, user1);
-        em.persist(userAddress3);
+        String jpql = "DELETE FROM User02 u WHERE u.id=?1";
+        Query query = em.createQuery(jpql);
+        query.setParameter(1, uid).executeUpdate();
     }
 }
