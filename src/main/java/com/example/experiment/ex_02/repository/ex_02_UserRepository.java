@@ -110,10 +110,8 @@ public class ex_02_UserRepository {
     }
 
     public void removeAddress(int aid) {
-
-        String jpql = "DELETE FROM Address02 a WHERE a.id=?1";
-        Query query = em.createQuery(jpql);
-        query.setParameter(1, aid).executeUpdate();
+        Address02 a = em.find(Address02.class, aid);
+        em.remove(a);
     }
 
     /**
@@ -122,8 +120,7 @@ public class ex_02_UserRepository {
      * @param uid
      */
     public void remaveUser(int uid) {
-        String jpql = "DELETE FROM User02 u WHERE u.id=?1";
-        Query query = em.createQuery(jpql);
-        query.setParameter(1, uid).executeUpdate();
+        User02 u = em.find(User02.class, uid);
+        em.remove(u);
     }
 }

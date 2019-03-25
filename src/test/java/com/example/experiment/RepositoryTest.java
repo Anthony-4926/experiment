@@ -9,7 +9,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,17 +35,22 @@ public class RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(value = false)
     public void test2() {
         ex_02_userRepository.updateUser(2, "李四");
         ex_02_userRepository.updateAddress(2,1);
         List<Address02> list = ex_02_userRepository.listAddresses(2);
         list.forEach(l->{
-            System.out.println(l.getDetail());
+            log.debug("",l.getDetail());
         });
 
         ex_02_userRepository.removeAddress(1);
         ex_02_userRepository.remaveUser(1);
     }
+
+
+
 
     @Test
     public  void insert() {
