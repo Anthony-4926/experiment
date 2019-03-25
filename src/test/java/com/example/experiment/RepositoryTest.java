@@ -64,7 +64,6 @@ public class RepositoryTest {
         ex_02_userRepository.addAddress(address, user1.getId());
         address1 = ex_02_userRepository.addAddress(address1, user.getId());
         ex_02_userRepository.addAddress(address1, user1.getId());
-
     }
 
 
